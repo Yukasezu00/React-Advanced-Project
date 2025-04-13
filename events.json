@@ -1,0 +1,166 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Michael Turner",
+      "image": "https://wincacademy.github.io/webpages/media/person6.jpeg"
+    },
+    {
+      "id": "2",
+      "name": "Sophia Collins",
+      "image": "https://wincacademy.github.io/webpages/media/article-author.png"
+    },
+    {
+      "id": "3",
+      "name": "Emily Carter",
+      "image": "https://wincacademy.github.io/webpages/media/person9.jpeg"
+    }
+  ],
+  "events": [
+    {
+      "id": "1",
+      "createdBy": 1,
+      "title": "Trampoline party",
+      "description": "Bounce around with your friends",
+      "image": "https://i.pinimg.com/736x/3d/2f/af/3d2faf4e3188d34a9fcdc00df59e77b0.jpg",
+      "categoryIds": [
+        2
+      ],
+      "location": "My back yard",
+      "startTime": "2023-03-10T18:00",
+      "endTime": "2023-03-10T19:00"
+    },
+    {
+      "id": "2",
+      "createdBy": 1,
+      "title": "Laser Tag mania",
+      "description": "Let's play laser tag!",
+      "image": "https://wincacademy.github.io/webpages/media/lasertag.jpg",
+      "categoryIds": [
+        2
+      ],
+      "location": "Blinded by the Lights Laser Tag, 15 Main St.",
+      "startTime": "2023-04-06T17:46:00.000Z",
+      "endTime": "2023-04-06T18:46:00.000Z"
+    },
+    {
+      "id": "3",
+      "createdBy": 2,
+      "title": "Badminton game",
+      "description": "Hit that shuttle!",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-vladvictoria-2202685.jpg",
+      "categoryIds": [
+        1,
+        2
+      ],
+      "location": "The Park",
+      "startTime": "2023-03-15T12:00:00.000Z",
+      "endTime": "2023-03-15T13:30:00.000Z"
+    },
+    {
+      "id": "4",
+      "createdBy": 2,
+      "title": "Yoga",
+      "description": "It's a bit of a stretch.",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-gabby-k-5384538.jpg",
+      "categoryIds": [
+        3
+      ],
+      "location": "Shavasana Yoga School",
+      "startTime": "2023-03-09T06:00:00.000Z",
+      "endTime": "2023-03-09T07:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "createdBy": 2,
+      "title": "Tennis",
+      "description": "Serving up fun on the court.",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-floriandoppler-3207474.jpg",
+      "categoryIds": [
+        1
+      ],
+      "location": "Grand Slam Tennis Court",
+      "startTime": "2023-03-09T08:00:00.000Z",
+      "endTime": "2023-03-09T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "createdBy": 5,
+      "title": "Board games night",
+      "description": "Roll the dice and join the fun!",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-tima-miroshnichenko-6598746.jpg",
+      "categoryIds": [
+        2
+      ],
+      "location": "Community Hall",
+      "startTime": "2023-03-13T18:00:00.000Z",
+      "endTime": "2023-03-13T21:00:00.000Z"
+    },
+    {
+      "id": "7",
+      "createdBy": 2,
+      "title": "Tea tasting",
+      "description": "Savor the soothing flavors of herbal teas.",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-viktoria-alipatova-1083711-2130137.jpg",
+      "categoryIds": [
+        3
+      ],
+      "location": "Cozy Tea House",
+      "startTime": "2023-03-17T15:00:00.000Z",
+      "endTime": "2023-03-17T17:00:00.000Z"
+    },
+    {
+      "id": "8",
+      "createdBy": 6,
+      "title": "Nature walk",
+      "description": "Connect with nature and clear your mind.",
+      "image": "https://wincacademy.github.io/webpages/media/hiking.png",
+      "categoryIds": [
+        3
+      ],
+      "location": "Forest Trailhead",
+      "startTime": "2023-03-16T07:00",
+      "endTime": "2023-03-16T09:30"
+    },
+    {
+      "id": "9",
+      "createdBy": 3,
+      "title": "Bowling night",
+      "description": "Strike up some fun with friends at the lanes!",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-rnnzeravac-9273055.jpg",
+      "categoryIds": [
+        2
+      ],
+      "location": "Downtown Bowling Alley",
+      "startTime": "2023-03-19T18:00:00.000Z",
+      "endTime": "2023-03-19T21:00:00.000Z"
+    },
+    {
+      "id": "187e",
+      "title": "Winc Brain Sports",
+      "description": "Join exciting coding and dev challenges in a fun competition. Who will win the deploy duel?",
+      "image": "https://images.unsplash.com/photo-1605379399642-870262d3d051",
+      "startTime": "2025-04-22T09:30",
+      "endTime": "2025-04-22T12:30",
+      "categoryIds": [
+        1,
+        2
+      ],
+      "createdBy": 1
+    }
+  ],
+  "categories": [
+    {
+      "name": "sports",
+      "id": "1"
+    },
+    {
+      "name": "games",
+      "id": "2"
+    },
+    {
+      "name": "relaxation",
+      "id": "3"
+    }
+  ]
+}
