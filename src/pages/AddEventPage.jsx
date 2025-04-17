@@ -19,10 +19,40 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import Select from "react-select";
+import { useCategories } from "../contexts/CategoriesContext";
+import { useUsers } from "../contexts/UsersContext";
+
+const customStyles = {
+  multiValue: (styles) => ({
+    ...styles,
+    backgroundColor: "#319795",
+    color: "white",
+  }),
+  multiValueLabel: (styles) => ({
+    ...styles,
+    color: "white",
+  }),
+  multiValueRemove: (styles) => ({
+    ...styles,
+    color: "white",
+    ":hover": {
+      backgroundColor: "#2C7A7B",
+      color: "white",
+    },
+  }),
+  option: (styles, { isFocused }) => ({
+    ...styles,
+    backgroundColor: isFocused ? "#EDF2F7" : "white",
+    color: "black",
+  }),
+};
 
 export const AddEventPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const categories = useCategories();
+  const users = useUsers();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -30,15 +60,17 @@ export const AddEventPage = () => {
     image: "",
     startTime: "",
     endTime: "",
-    categoryIds: "",
+    categoryIds: [],
+    createdBy: null,
   });
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Detecteer onopgeslagen wijzigingen
   useEffect(() => {
-    const hasChanges = Object.values(formData).some((v) => v !== "");
+    const hasChanges = Object.values(formData).some((v) =>
+      Array.isArray(v) ? v.length > 0 : v !== ""
+    );
     setHasUnsavedChanges(hasChanges);
   }, [formData]);
 
@@ -46,6 +78,21 @@ export const AddEventPage = () => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleCategoryChange = (selectedOptions) => {
+    const ids = selectedOptions.map((opt) => opt.value);
+    setFormData((prev) => ({
+      ...prev,
+      categoryIds: ids,
+    }));
+  };
+
+  const handleCreatorChange = (selectedOption) => {
+    setFormData((prev) => ({
+      ...prev,
+      createdBy: selectedOption ? selectedOption.value : null,
     }));
   };
 
@@ -60,14 +107,21 @@ export const AddEventPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newEvent = {
-      ...formData,
-      categoryIds: formData.categoryIds
-        .split(",")
-        .map((id) => Number(id.trim()))
-        .filter((id) => !isNaN(id)),
-      createdBy: 1,
-    };
+    const start = new Date(formData.startTime);
+    const end = new Date(formData.endTime);
+
+    if (end < start) {
+      toast({
+        title: "Invalid dates",
+        description: "End time cannot be before start time.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const newEvent = { ...formData };
 
     try {
       const res = await fetch("http://localhost:3000/events", {
@@ -159,21 +213,42 @@ export const AddEventPage = () => {
           />
         </FormControl>
 
-        <FormControl mb={6}>
-          <FormLabel>Category IDs (comma separated)</FormLabel>
-          <Input
-            name="categoryIds"
-            value={formData.categoryIds}
-            onChange={handleInputChange}
+        <FormControl mb={4}>
+          <FormLabel>Categories</FormLabel>
+          <Select
+            isMulti
+            styles={customStyles}
+            options={categories.map((cat) => ({
+              value: cat.id,
+              label: cat.name,
+            }))}
+            onChange={handleCategoryChange}
+            value={categories
+              .filter((cat) => formData.categoryIds.includes(cat.id))
+              .map((cat) => ({ value: cat.id, label: cat.name }))}
           />
         </FormControl>
 
-        <Button type="submit" colorScheme="teal" w="auto">
+        <FormControl mb={6} isRequired>
+          <FormLabel>Created By</FormLabel>
+          <Select
+            styles={customStyles}
+            options={users.map((user) => ({
+              value: user.id,
+              label: user.name,
+            }))}
+            onChange={handleCreatorChange}
+            value={users
+              .filter((user) => user.id === formData.createdBy)
+              .map((user) => ({ value: user.id, label: user.name }))}
+          />
+        </FormControl>
+
+        <Button type="submit" colorScheme="teal">
           Submit
         </Button>
       </form>
 
-      {/* Chakra UI Modal voor terug-navigatie */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>

@@ -20,20 +20,56 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
 } from "@chakra-ui/react";
+import Select from "react-select";
+import { useCategories } from "../contexts/CategoriesContext";
+import { useUsers } from "../contexts/UsersContext";
 
 export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
+  const categories = useCategories();
+  const users = useUsers();
+  const toast = useToast();
+  const cancelRef = useRef();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [categoryIds, setCategoryIds] = useState("");
-
-  const toast = useToast();
-  const cancelRef = useRef();
-
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCreator, setSelectedCreator] = useState(null);
   const [originalEvent, setOriginalEvent] = useState(null);
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      borderColor: "#319795",
+      boxShadow: "none",
+      "&:hover": { borderColor: "#38B2AC" },
+    }),
+    multiValue: (base) => ({
+      ...base,
+      backgroundColor: "#319795",
+      color: "white",
+    }),
+    multiValueLabel: (base) => ({
+      ...base,
+      color: "white",
+    }),
+    multiValueRemove: (base) => ({
+      ...base,
+      color: "white",
+      ":hover": {
+        backgroundColor: "#2C7A7B",
+        color: "white",
+      },
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? "#EDF2F7" : "white",
+      color: "black",
+    }),
+  };
 
   useEffect(() => {
     if (event) {
@@ -43,7 +79,14 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
         image: event.image || "",
         startTime: event.startTime?.slice(0, 16) || "",
         endTime: event.endTime?.slice(0, 16) || "",
-        categoryIds: event.categoryIds?.join(", ") || "",
+        selectedCategories:
+          event.categoryIds
+            ?.map((id) => {
+              const cat = categories.find((c) => c.id === id);
+              return cat ? { value: cat.id, label: cat.name } : null;
+            })
+            .filter(Boolean) || [],
+        selectedCreator: users.find((u) => u.id === event.createdBy) || null,
       };
       setOriginalEvent(original);
       setTitle(original.title);
@@ -51,9 +94,17 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
       setImage(original.image);
       setStartTime(original.startTime);
       setEndTime(original.endTime);
-      setCategoryIds(original.categoryIds);
+      setSelectedCategories(original.selectedCategories);
+      setSelectedCreator(
+        original.selectedCreator
+          ? {
+              value: original.selectedCreator.id,
+              label: original.selectedCreator.name,
+            }
+          : null
+      );
     }
-  }, [event]);
+  }, [event, categories, users]);
 
   const hasUnsavedChanges =
     title !== originalEvent?.title ||
@@ -61,7 +112,18 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
     image !== originalEvent?.image ||
     startTime !== originalEvent?.startTime ||
     endTime !== originalEvent?.endTime ||
-    categoryIds !== originalEvent?.categoryIds;
+    JSON.stringify(selectedCategories) !==
+      JSON.stringify(originalEvent?.selectedCategories) ||
+    JSON.stringify(selectedCreator) !==
+      JSON.stringify(originalEvent?.selectedCreator);
+
+  const handleClose = () => {
+    if (hasUnsavedChanges) {
+      setShowDiscardDialog(true);
+    } else {
+      onClose();
+    }
+  };
 
   const resetForm = () => {
     if (originalEvent) {
@@ -70,15 +132,15 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
       setImage(originalEvent.image);
       setStartTime(originalEvent.startTime);
       setEndTime(originalEvent.endTime);
-      setCategoryIds(originalEvent.categoryIds);
-    }
-  };
-
-  const handleClose = () => {
-    if (hasUnsavedChanges) {
-      setShowDiscardDialog(true);
-    } else {
-      onClose();
+      setSelectedCategories(originalEvent.selectedCategories);
+      setSelectedCreator(
+        originalEvent.selectedCreator
+          ? {
+              value: originalEvent.selectedCreator.id,
+              label: originalEvent.selectedCreator.name,
+            }
+          : null
+      );
     }
   };
 
@@ -89,8 +151,17 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
   };
 
   const handleSubmit = async () => {
-    if (!hasUnsavedChanges) {
-      onClose(); // gewoon sluiten zonder iets te doen
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (end < start) {
+      toast({
+        title: "Invalid dates",
+        description: "End time cannot be before start time.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -101,10 +172,8 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
       image,
       startTime,
       endTime,
-      categoryIds: categoryIds
-        .split(",")
-        .map((id) => parseInt(id.trim()))
-        .filter((id) => !isNaN(id)),
+      categoryIds: selectedCategories.map((c) => c.value),
+      createdBy: selectedCreator?.value,
     };
 
     try {
@@ -119,7 +188,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
       const data = await res.json();
 
       if (onUpdate) {
-        onUpdate(data); // toast in EventPage.jsx
+        onUpdate(data);
       } else {
         toast({
           title: "Event updated.",
@@ -131,7 +200,6 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
 
       onClose();
     } catch (error) {
-      console.error("Update failed:", error);
       toast({
         title: "Update failed.",
         description: error.message || "Something went wrong.",
@@ -187,10 +255,26 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
             </FormControl>
 
             <FormControl mb={3}>
-              <FormLabel>Category IDs (comma separated)</FormLabel>
-              <Input
-                value={categoryIds}
-                onChange={(e) => setCategoryIds(e.target.value)}
+              <FormLabel>Categories</FormLabel>
+              <Select
+                isMulti
+                options={categories.map((c) => ({
+                  value: c.id,
+                  label: c.name,
+                }))}
+                value={selectedCategories}
+                onChange={setSelectedCategories}
+                styles={customStyles}
+              />
+            </FormControl>
+
+            <FormControl mb={3} isRequired>
+              <FormLabel>Creator</FormLabel>
+              <Select
+                options={users.map((u) => ({ value: u.id, label: u.name }))}
+                value={selectedCreator}
+                onChange={setSelectedCreator}
+                styles={customStyles}
               />
             </FormControl>
           </ModalBody>
@@ -204,7 +288,6 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
         </ModalContent>
       </Modal>
 
-      {/* Confirm discard modal */}
       <AlertDialog
         isOpen={showDiscardDialog}
         leastDestructiveRef={cancelRef}
@@ -215,11 +298,9 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             Discard Changes?
           </AlertDialogHeader>
-
           <AlertDialogBody>
             You have unsaved changes. Are you sure you want to discard them?
           </AlertDialogBody>
-
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={() => setShowDiscardDialog(false)}>
               Cancel

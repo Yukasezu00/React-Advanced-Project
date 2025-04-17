@@ -120,9 +120,9 @@ export const EventPage = () => {
 
       <Box mt={2} mb={4}>
         {event.categoryIds?.map((id) => {
-          const category = categories.find((c) => c.id === id);
+          const category = categories.find((c) => Number(c.id) === Number(id));
           return (
-            <Badge key={id} colorScheme="purple" mr={2}>
+            <Badge key={id} colorScheme="teal" mr={2}>
               {category ? category.name : `Category ${id}`}
             </Badge>
           );

@@ -83,54 +83,62 @@ export const EventsPage = () => {
         ))}
       </HStack>
 
-      <VStack spacing={8} align="stretch">
-        {filteredEvents.map((event) => (
-          <Box
-            as={RouterLink}
-            to={`/event/${event.id}`}
-            key={event.id}
-            p={6}
-            borderWidth="1px"
-            borderRadius="lg"
-            _hover={{ bg: "gray.50", cursor: "pointer" }}
-            boxShadow="md"
-            bg="white"
-          >
-            <Flex direction={{ base: "column", md: "row" }}>
-              <Image
-                src={event.image}
-                alt={event.title}
-                boxSize="120px"
-                objectFit="cover"
-                borderRadius="md"
-                mb={{ base: 4, md: 0 }}
-              />
-              <Box ml={{ base: 0, md: 6 }}>
-                <Heading size="md" mb={4}>
-                  {event.title}
-                </Heading>
-                <Text mb={4}>{event.description}</Text>
-                <Text mb={4} fontSize="sm" color="gray.600">
-                  Start: {new Date(event.startTime).toLocaleString()}
-                </Text>
-                <Text fontSize="sm" color="gray.600" mb={4}>
-                  End: {new Date(event.endTime).toLocaleString()}
-                </Text>
-                <Box mt={2}>
-                  {event.categoryIds?.map((id) => {
-                    const category = categories.find((c) => c.id === id);
-                    return (
-                      <Badge key={id} colorScheme="purple" mr={2}>
-                        {category ? category.name : `Category ${id}`}
-                      </Badge>
-                    );
-                  })}
+      {filteredEvents.length === 0 ? (
+        <Text mt={4} fontStyle="italic" color="gray.500">
+          No events found.
+        </Text>
+      ) : (
+        <VStack spacing={8} align="stretch">
+          {filteredEvents.map((event) => (
+            <Box
+              as={RouterLink}
+              to={`/event/${event.id}`}
+              key={event.id}
+              p={6}
+              borderWidth="1px"
+              borderRadius="lg"
+              _hover={{ bg: "gray.50", cursor: "pointer" }}
+              boxShadow="md"
+              bg="white"
+            >
+              <Flex direction={{ base: "column", md: "row" }}>
+                <Image
+                  src={event.image}
+                  alt={event.title}
+                  boxSize="120px"
+                  objectFit="cover"
+                  borderRadius="md"
+                  mb={{ base: 4, md: 0 }}
+                />
+                <Box ml={{ base: 0, md: 6 }}>
+                  <Heading size="md" mb={4}>
+                    {event.title}
+                  </Heading>
+                  <Text mb={4}>{event.description}</Text>
+                  <Text mb={4} fontSize="sm" color="gray.600">
+                    Start: {new Date(event.startTime).toLocaleString()}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600" mb={4}>
+                    End: {new Date(event.endTime).toLocaleString()}
+                  </Text>
+                  <Box mt={2}>
+                    {event.categoryIds?.map((id) => {
+                      const category = categories.find(
+                        (c) => Number(c.id) === Number(id)
+                      );
+                      return (
+                        <Badge key={id} colorScheme="teal" mr={2}>
+                          {category ? category.name : `Category ${id}`}
+                        </Badge>
+                      );
+                    })}
+                  </Box>
                 </Box>
-              </Box>
-            </Flex>
-          </Box>
-        ))}
-      </VStack>
+              </Flex>
+            </Box>
+          ))}
+        </VStack>
+      )}
     </Box>
   );
 };
