@@ -17,8 +17,8 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { useCategories } from "../contexts/CategoriesContext";
 import { useUsers } from "../contexts/UsersContext";
@@ -53,6 +53,7 @@ export const AddEventPage = () => {
   const toast = useToast();
   const categories = useCategories();
   const users = useUsers();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -65,7 +66,6 @@ export const AddEventPage = () => {
   });
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const hasChanges = Object.values(formData).some((v) =>
@@ -121,13 +121,11 @@ export const AddEventPage = () => {
       return;
     }
 
-    const newEvent = { ...formData };
-
     try {
       const res = await fetch("http://localhost:3000/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEvent),
+        body: JSON.stringify(formData),
       });
 
       if (!res.ok) throw new Error("Failed to add event");

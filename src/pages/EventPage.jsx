@@ -6,7 +6,6 @@ import {
   Text,
   Image,
   Spinner,
-  Badge,
   Avatar,
   Flex,
   Button,
@@ -23,13 +22,14 @@ import {
 import { useCategories } from "../contexts/CategoriesContext";
 import { useUsers } from "../contexts/UsersContext";
 import { EditEventModal } from "../components/EditEventModal";
+import CategoryBadge from "../components/CategoryBadge";
 
 export const EventPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure(); // voor delete-confirm modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const categories = useCategories();
   const users = useUsers();
   const toast = useToast();
@@ -121,11 +121,9 @@ export const EventPage = () => {
       <Box mt={2} mb={4}>
         {event.categoryIds?.map((id) => {
           const category = categories.find((c) => Number(c.id) === Number(id));
-          return (
-            <Badge key={id} colorScheme="teal" mr={2}>
-              {category ? category.name : `Category ${id}`}
-            </Badge>
-          );
+          return category ? (
+            <CategoryBadge key={id} label={category.name} />
+          ) : null;
         })}
       </Box>
 
@@ -151,7 +149,7 @@ export const EventPage = () => {
         onClose={() => setIsEditOpen(false)}
         event={event}
         onUpdate={(updatedEvent) => {
-          setEvent(updatedEvent); // <-- update direct de view!
+          setEvent(updatedEvent);
           toast({
             title: "Event updated.",
             status: "success",

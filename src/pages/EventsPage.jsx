@@ -5,7 +5,6 @@ import {
   Text,
   VStack,
   Image,
-  Badge,
   Button,
   Flex,
   Input,
@@ -13,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useCategories } from "../contexts/CategoriesContext";
+import CategoryBadge from "../components/CategoryBadge";
 
 export const EventsPage = () => {
   const [events, setEvents] = useState([]);
@@ -126,11 +126,9 @@ export const EventsPage = () => {
                       const category = categories.find(
                         (c) => Number(c.id) === Number(id)
                       );
-                      return (
-                        <Badge key={id} colorScheme="teal" mr={2}>
-                          {category ? category.name : `Category ${id}`}
-                        </Badge>
-                      );
+                      return category ? (
+                        <CategoryBadge key={id} label={category.name} />
+                      ) : null;
                     })}
                   </Box>
                 </Box>

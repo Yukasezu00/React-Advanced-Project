@@ -88,6 +88,7 @@ export const EditEventModal = ({ isOpen, onClose, event, onUpdate }) => {
             .filter(Boolean) || [],
         selectedCreator: users.find((u) => u.id === event.createdBy) || null,
       };
+
       setOriginalEvent(original);
       setTitle(original.title);
       setDescription(original.description);

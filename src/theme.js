@@ -5,8 +5,8 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        fontSize: "sm", // 👈 kleiner font
-        lineHeight: "1.4", // 👈 iets strakkere regelafstand
+        fontSize: "sm",
+        lineHeight: "1.4",
         bg: "gray.50",
         color: "gray.800",
       },
@@ -15,7 +15,8 @@ const theme = extendTheme({
   components: {
     Button: {
       defaultProps: {
-        size: "sm", // 👈 kleinere knoppen
+        size: "sm",
+        colorScheme: "teal", // 👈 consistent met jouw voorkeur
       },
     },
     Heading: {
@@ -31,7 +32,19 @@ const theme = extendTheme({
     },
     Text: {
       baseStyle: {
-        fontSize: "sm", // 👈 kleinere paragrafen
+        fontSize: "sm",
+        color: "gray.700", // 👈 iets vriendelijker dan gray.800
+      },
+    },
+    Badge: {
+      baseStyle: {
+        borderRadius: "md", // 👈 consistent afgerond uiterlijk
+        px: 2,
+        py: 0.5,
+        textTransform: "capitalize",
+      },
+      defaultProps: {
+        colorScheme: "teal", // 👈 consistent met CategoryBadge
       },
     },
   },
